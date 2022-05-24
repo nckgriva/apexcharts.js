@@ -1673,6 +1673,8 @@
         if (Array.isArray(text)) {
           elText = w.globals.dom.Paper.text(function (add) {
             for (var i = 0; i < text.length; i++) {
+              truncatedText = text[i];
+
               if (maxWidth) {
                 truncatedText = _this.getTextBasedOnMaxWidth(_objectSpread2({
                   text: text[i]
@@ -10381,6 +10383,10 @@
     }, {
       key: "getSvgString",
       value: function getSvgString(scale) {
+        if (scale == undefined) {
+          scale = 1; // if no scale is specified, don't scale...
+        }
+
         var svgString = this.w.globals.dom.Paper.svg(); // in case the scale is different than 1, the svg needs to be rescaled
 
         if (scale !== 1) {
@@ -21421,6 +21427,10 @@
         this.size = w.config.plotOptions.radar.size;
       }
 
+      if (w.config.isXNumeric) {
+        this.xWidth = w.globals.maxX - w.globals.minX;
+      }
+
       this.dataRadiusOfPercent = [];
       this.dataRadius = [];
       this.angleArr = [];
@@ -21481,6 +21491,11 @@
             _this.dataRadiusOfPercent[i][j] = dv / range;
             _this.dataRadius[i][j] = _this.dataRadiusOfPercent[i][j] * _this.size;
             _this.angleArr[i][j] = j * _this.disAngle;
+            console.log(series[i][j]);
+
+            if (w.config.isXNumeric) {
+              _this.angleArr[i][j] = series[i][j].data.x / _this.xWidth * Math.PI * 2;
+            }
           });
           dataPointsPos = _this.getDataPointsPos(_this.dataRadius[i], _this.angleArr[i]);
 
@@ -21555,11 +21570,7 @@
 
           s.forEach(function (sj, j) {
             var markers = new Markers(_this.ctx);
-            var opts = markers.getMarkerConfig({
-              cssClass: 'apexcharts-marker',
-              seriesIndex: i,
-              dataPointIndex: j
-            });
+            var opts = markers.getMarkerConfig('apexcharts-marker', i, j);
 
             var point = _this.graphics.drawMarker(dataPointsPos[j].x, dataPointsPos[j].y, opts);
 

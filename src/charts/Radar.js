@@ -64,6 +64,10 @@ class Radar {
       this.size = w.config.plotOptions.radar.size
     }
 
+    if(w.config.isXNumeric) {
+      this.xWidth = w.globals.maxX - w.globals.minX;
+    }
+
     this.dataRadiusOfPercent = []
     this.dataRadius = []
     this.angleArr = []
@@ -129,6 +133,10 @@ class Radar {
 
         this.dataRadius[i][j] = this.dataRadiusOfPercent[i][j] * this.size
         this.angleArr[i][j] = j * this.disAngle
+          console.log(series[i][j]);
+        if(w.config.isXNumeric) {
+          this.angleArr[i][j] = series[i][j].data.x / this.xWidth * Math.PI*2;
+        }
       })
 
       dataPointsPos = this.getDataPointsPos(
@@ -219,11 +227,7 @@ class Radar {
       s.forEach((sj, j) => {
         let markers = new Markers(this.ctx)
 
-        let opts = markers.getMarkerConfig({
-          cssClass: 'apexcharts-marker',
-          seriesIndex: i,
-          dataPointIndex: j
-        })
+        let opts = markers.getMarkerConfig('apexcharts-marker', i, j)
 
         let point = this.graphics.drawMarker(
           dataPointsPos[j].x,

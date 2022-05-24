@@ -64,7 +64,7 @@ class Radar {
       this.size = w.config.plotOptions.radar.size
     }
 
-    if(w.globals.isXNumeric) {
+    if (w.globals.isXNumeric) {
       this.xWidth = w.globals.maxX - w.globals.minX;
     }
 
@@ -133,8 +133,8 @@ class Radar {
 
         this.dataRadius[i][j] = this.dataRadiusOfPercent[i][j] * this.size
         this.angleArr[i][j] = j * this.disAngle
-        if(w.globals.isXNumeric) {
-          this.angleArr[i][j] = w.globals.seriesX[i][j] / this.xWidth * Math.PI*2;
+        if (w.globals.isXNumeric) {
+          this.angleArr[i][j] = w.globals.seriesX[i][j] / this.xWidth * Math.PI * 2;
         }
       })
 
@@ -225,7 +225,11 @@ class Radar {
       s.forEach((sj, j) => {
         let markers = new Markers(this.ctx)
 
-        let opts = markers.getMarkerConfig('apexcharts-marker', i, j)
+        let opts = markers.getMarkerConfig({
+          cssClass: 'apexcharts-marker',
+          seriesIndex: i,
+          dataPointIndex: j
+        })
 
         let point = this.graphics.drawMarker(
           dataPointsPos[j].x,
@@ -396,7 +400,7 @@ class Radar {
           w
         })
 
-        if(w.globals.isXNumeric) text = i * this.xWidth/len;
+        if (w.globals.isXNumeric) text = i * this.xWidth / len;
 
         dataLabels.plotDataLabelsText({
           x: textPos.newX,
@@ -408,7 +412,7 @@ class Radar {
           parent: elXAxisWrap,
           color:
             Array.isArray(xaxisLabelsConfig.style.colors) &&
-            xaxisLabelsConfig.style.colors[i]
+              xaxisLabelsConfig.style.colors[i]
               ? xaxisLabelsConfig.style.colors[i]
               : '#a8a8a8',
           dataLabelsConfig: {

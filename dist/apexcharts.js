@@ -21506,7 +21506,6 @@
             _this.dataRadiusOfPercent[i][j] = dv / range;
             _this.dataRadius[i][j] = _this.dataRadiusOfPercent[i][j] * _this.size;
             _this.angleArr[i][j] = j * _this.disAngle;
-            console.log(w.globals.seriesX[i][j]);
 
             if (w.globals.isXNumeric) {
               _this.angleArr[i][j] = w.globals.seriesX[i][j] / _this.xWidth * Math.PI * 2;
@@ -21585,7 +21584,11 @@
 
           s.forEach(function (sj, j) {
             var markers = new Markers(_this.ctx);
-            var opts = markers.getMarkerConfig('apexcharts-marker', i, j);
+            var opts = markers.getMarkerConfig({
+              cssClass: 'apexcharts-marker',
+              seriesIndex: i,
+              dataPointIndex: j
+            });
 
             var point = _this.graphics.drawMarker(dataPointsPos[j].x, dataPointsPos[j].y, opts);
 

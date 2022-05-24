@@ -64,7 +64,7 @@ class Radar {
       this.size = w.config.plotOptions.radar.size
     }
 
-    if(w.config.isXNumeric) {
+    if(w.globals.isXNumeric) {
       this.xWidth = w.globals.maxX - w.globals.minX;
     }
 
@@ -133,9 +133,8 @@ class Radar {
 
         this.dataRadius[i][j] = this.dataRadiusOfPercent[i][j] * this.size
         this.angleArr[i][j] = j * this.disAngle
-          console.log(series[i][j]);
-        if(w.config.isXNumeric) {
-          this.angleArr[i][j] = series[i][j].data.x / this.xWidth * Math.PI*2;
+        if(w.globals.isXNumeric) {
+          this.angleArr[i][j] = w.globals.seriesX[i][j] / this.xWidth * Math.PI*2;
         }
       })
 
@@ -147,7 +146,6 @@ class Radar {
         x: 0,
         y: 0
       })
-
       // points
       elPointsMain = this.graphics.group({
         class: 'apexcharts-series-markers-wrap apexcharts-element-hidden'
@@ -318,7 +316,8 @@ class Radar {
     let lines = []
 
     radiusSizes.forEach((radiusSize, r) => {
-      const polygon = Utils.getPolygonPos(radiusSize, this.dataPointsLen)
+      const len = w.globals.isXNumeric ? w.config.xaxis.tickAmount : this.dataPointsLen;
+      const polygon = Utils.getPolygonPos(radiusSize, len)
       let string = ''
 
       polygon.forEach((p, i) => {
@@ -381,7 +380,8 @@ class Radar {
       class: 'apexcharts-xaxis'
     })
 
-    let polygonPos = Utils.getPolygonPos(this.size, this.dataPointsLen)
+    const len = w.globals.isXNumeric ? w.config.xaxis.tickAmount : this.dataPointsLen;
+    let polygonPos = Utils.getPolygonPos(this.size, len)
 
     w.globals.labels.forEach((label, i) => {
       let formatter = w.config.xaxis.labels.formatter
@@ -395,6 +395,8 @@ class Radar {
           dataPointIndex: i,
           w
         })
+
+        if(w.globals.isXNumeric) text = i * this.xWidth/len;
 
         dataLabels.plotDataLabelsText({
           x: textPos.newX,

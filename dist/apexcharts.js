@@ -571,6 +571,21 @@
         return dotsArray;
       }
     }, {
+      key: "getPolygonPosNumeric",
+      value: function getPolygonPosNumeric(range, pos) {
+        var dotsArray = [];
+        var angle = Math.PI * 2 * pos / range;
+
+        for (var i = 0; i < dataPointsLen; i++) {
+          var curPos = {};
+          curPos.x = size * Math.sin(i * angle);
+          curPos.y = -size * Math.cos(i * angle);
+          dotsArray.push(curPos);
+        }
+
+        return dotsArray;
+      }
+    }, {
       key: "polarToCartesian",
       value: function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
         var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -21427,7 +21442,7 @@
         this.size = w.config.plotOptions.radar.size;
       }
 
-      if (w.config.isXNumeric) {
+      if (w.globals.isXNumeric) {
         this.xWidth = w.globals.maxX - w.globals.minX;
       }
 
@@ -21491,10 +21506,10 @@
             _this.dataRadiusOfPercent[i][j] = dv / range;
             _this.dataRadius[i][j] = _this.dataRadiusOfPercent[i][j] * _this.size;
             _this.angleArr[i][j] = j * _this.disAngle;
-            console.log(series[i][j]);
+            console.log(w.globals.seriesX[i][j]);
 
-            if (w.config.isXNumeric) {
-              _this.angleArr[i][j] = series[i][j].data.x / _this.xWidth * Math.PI * 2;
+            if (w.globals.isXNumeric) {
+              _this.angleArr[i][j] = w.globals.seriesX[i][j] / _this.xWidth * Math.PI * 2;
             }
           });
           dataPointsPos = _this.getDataPointsPos(_this.dataRadius[i], _this.angleArr[i]);
@@ -21650,7 +21665,8 @@
         var polygonStrings = [];
         var lines = [];
         radiusSizes.forEach(function (radiusSize, r) {
-          var polygon = Utils$1.getPolygonPos(radiusSize, _this2.dataPointsLen);
+          var len = w.globals.isXNumeric ? w.config.xaxis.tickAmount : _this2.dataPointsLen;
+          var polygon = Utils$1.getPolygonPos(radiusSize, len);
           var string = '';
           polygon.forEach(function (p, i) {
             if (r === 0) {
@@ -21700,7 +21716,8 @@
         var elXAxisWrap = this.graphics.group({
           class: 'apexcharts-xaxis'
         });
-        var polygonPos = Utils$1.getPolygonPos(this.size, this.dataPointsLen);
+        var len = w.globals.isXNumeric ? w.config.xaxis.tickAmount : this.dataPointsLen;
+        var polygonPos = Utils$1.getPolygonPos(this.size, len);
         w.globals.labels.forEach(function (label, i) {
           var formatter = w.config.xaxis.labels.formatter;
           var dataLabels = new DataLabels(_this3.ctx);
@@ -21713,6 +21730,7 @@
               dataPointIndex: i,
               w: w
             });
+            if (w.globals.isXNumeric) text = i * _this3.xWidth / len;
             dataLabels.plotDataLabelsText({
               x: textPos.newX,
               y: textPos.newY,
